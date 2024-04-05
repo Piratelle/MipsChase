@@ -43,6 +43,21 @@ public class Target : MonoBehaviour
 
     void FixedUpdate()
     {
+        switch (m_nState)
+        {
+            case eState.kIdle:
+                // "stay in one place until the player gets close"
+                break;
+            case eState.kHopStart:
+                // "hop... without going off the screen, AND avoid the player"
+                break;
+            case eState.kHop:
+                break;
+            default: // handles eState.kCaught
+                // "attaches itself to the player when it is caught"
+                // already parented to player by OnTriggerStay2D, player's movement should handle this
+                break;
+        }
         GetComponent<Renderer>().material.color = stateColors[(int)m_nState];
     }
 
