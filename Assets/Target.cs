@@ -47,6 +47,11 @@ public class Target : MonoBehaviour
         {
             case eState.kIdle:
                 // "stay in one place until the player gets close"
+                if (Vector3.Distance(transform.position, m_player.transform.position) <= m_fScaredDistance)
+                {
+                    Debug.Log("Too close!");
+                    m_nState = eState.kHopStart;
+                }
                 break;
             case eState.kHopStart:
                 // "hop... without going off the screen, AND avoid the player"
