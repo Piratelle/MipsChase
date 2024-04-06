@@ -99,6 +99,32 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
+        CheckForDive();
+        switch (m_nState)
+        {
+            case eState.kMoveSlow:
+                UpdateDirectionAndSpeed();
+                break;
+            case eState.kMoveFast:
+                UpdateDirectionAndSpeed();
+                break;
+            case eState.kDiving:
+                // "similar to hop this should be a visible but quick movement...recovery afterwards"
+                // move along dive vector
+                float fStep = Time.deltaTime * m_fDiveDistance / m_fDiveTime;
+                transform.position = Vector3.MoveTowards(transform.position, m_vDiveEndPos, fStep);
+
+                // check for end of dive & state change
+                if (Time.time >= m_fDiveStartTime + m_fDiveTime) m_nState = eState.kRecovering;
+                break;
+            case eState.kRecovering:
+                // "no movement is possible, followed by transitioning to the slow move state"
+                if (Time.time >= m_fDiveStartTime + m_fDiveTime + m_fDiveRecoveryTime) m_nState = eState.kMoveSlow;
+                break;
+            default:
+                Debug.Log("Unknown Player state reached: " + m_nState.ToString());
+                break;
+        }
         GetComponent<Renderer>().material.color = stateColors[(int)m_nState];
     }
 }

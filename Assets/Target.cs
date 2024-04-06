@@ -106,7 +106,7 @@ public class Target : MonoBehaviour
                 transform.position = Vector3.MoveTowards(transform.position, m_vHopEndPos, fStep);
 
                 // check for end of hop & state change
-                if (Vector3.Distance(transform.position, m_vHopEndPos) < 0.001f) m_nState = eState.kIdle;
+                if (Time.time >= m_fHopStart + m_fHopTime) m_nState = eState.kIdle;
                 break;
             case eState.kCaught:
                 // "attaches itself to the player when it is caught"
