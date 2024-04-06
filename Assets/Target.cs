@@ -62,6 +62,7 @@ public class Target : MonoBehaviour
                 // set initial hop end/loop values based on player position
                 Vector2 vOffset = new Vector2(transform.position.x - m_player.transform.position.x, transform.position.y - m_player.transform.position.y);
                 m_vHopEndPos = transform.position; // placeholder in case we make it through all our attempts without being in bounds
+                float fTryAngle;
                 float fMaxDistance = 0;
                 int nAttempts = 0;
                 do
@@ -70,7 +71,7 @@ public class Target : MonoBehaviour
                     nAttempts++;
 
                     // try a new angle
-                    float fTryAngle = (Mathf.Atan2(vOffset.y, vOffset.x) * Mathf.Rad2Deg) + 180; // face away from player
+                    fTryAngle = (Mathf.Atan2(vOffset.y, vOffset.x) * Mathf.Rad2Deg) + 180; // face away from player
                     _ = (fTryAngle + Random.Range(-130f,130f)) * Mathf.Deg2Rad;
                     Vector3 vTryPos = new Vector3(Mathf.Cos(fTryAngle), Mathf.Sin(fTryAngle), 0) * fHopLength + transform.position;
 
@@ -96,7 +97,7 @@ public class Target : MonoBehaviour
                     }
                 } while (nAttempts < m_nMaxMoveAttempts);
 
-                //transform.LookAt(m_vHopEndPos - transform.position, Vector3.forward);
+                transform.Rotate(Vector3.forward, fTryAngle);
                 m_nState = eState.kHop;
                 break;
             case eState.kHop:
