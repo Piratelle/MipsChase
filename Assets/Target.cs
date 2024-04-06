@@ -35,7 +35,7 @@ public class Target : MonoBehaviour
     void Start()
     {
         // Setup the initial state and get the player GO.
-        m_nState = eState.kHopStart;
+        m_nState = eState.kIdle;
         m_player = GameObject.FindObjectOfType(typeof(Player)) as Player;
     }
 
@@ -48,7 +48,7 @@ public class Target : MonoBehaviour
                 if (Vector3.Distance(transform.position, m_player.transform.position) <= m_fScaredDistance)
                 {
                     Debug.Log("Too close!");
-                    m_nState = eState.kIdle;
+                    m_nState = eState.kHopStart;
                 }
                 break;
             case eState.kHopStart:
