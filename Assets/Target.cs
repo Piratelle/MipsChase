@@ -1,3 +1,5 @@
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Target : MonoBehaviour
@@ -55,15 +57,16 @@ public class Target : MonoBehaviour
                 // "hop... without going off the screen, AND avoid the player"
 
                 // set hop start values
+                //Debug.Log(String.Format("Starting hop from ({0},{1})", transform.position.x, transform.position.y));
                 m_vHopStartPos = transform.position;
                 m_fHopStart = Time.time;
                 float fHopLength = m_fHopTime * m_fHopSpeed;
 
                 // set initial hop end/loop values based on player position
-                Vector2 vOffset = new Vector2(transform.position.x - m_player.transform.position.x, transform.position.y - m_player.transform.position.y);
+                Vector3 vOffset = transform.position - m_player.transform.position;
                 m_vHopEndPos = transform.position; // placeholder in case we make it through all our attempts without being in bounds
                 float fTryAngle;
-                float fMaxDistance = 0;
+                float fMaxDistance = 0; // not accurate, but means it's harder to get trapped against a wall (hopping is better than staying in one spot)
                 int nAttempts = 0;
                 do
                 {
@@ -71,33 +74,31 @@ public class Target : MonoBehaviour
                     nAttempts++;
 
                     // try a new angle
-                    fTryAngle = (Mathf.Atan2(vOffset.y, vOffset.x) * Mathf.Rad2Deg) + 180; // face away from player
-                    _ = (fTryAngle + Random.Range(-130f,130f)) * Mathf.Deg2Rad;
-                    Vector3 vTryPos = new Vector3(Mathf.Cos(fTryAngle), Mathf.Sin(fTryAngle), 0) * fHopLength + transform.position;
+                    fTryAngle = UnityEngine.Random.Range(0f, 360f) * Mathf.Deg2Rad;
+                    Vector3 vTryPos = (new Vector3(Mathf.Cos(fTryAngle), Mathf.Sin(fTryAngle), 0) * fHopLength) + transform.position;
+                    //Debug.Log(String.Format("Attempt #{0}: {1} degrees, {2} radians -> ({3},{4})",nAttempts, fTryAngle * Mathf.Rad2Deg, fTryAngle, vTryPos.x, vTryPos.y));
 
                     // is the position in bounds?
                     Vector2 vScreenPos = Camera.main.WorldToScreenPoint(vTryPos);
                     if (0 > vScreenPos.x || vScreenPos.x > Camera.main.pixelWidth 
-                        || 0 > vScreenPos.y || vScreenPos.y > Camera.main.pixelHeight) continue;
-
-                    // how close is the position to the player?
-                    float fTryDistance = Vector3.Distance(vTryPos, m_player.transform.position);
-                    if (fTryDistance > m_fScaredDistance)
+                        || 0 > vScreenPos.y || vScreenPos.y > Camera.main.pixelHeight)
                     {
-                        // safe hop spot!
-                        m_vHopEndPos = vTryPos;
-                        break;
+                        //Debug.Log("Out of Bounds!");
+                        continue;
                     }
 
-                    // is it farther away than our previous best guess?
+                    // is the position better than our best attempt so far?
+                    float fTryDistance = Vector3.Distance(vTryPos, m_player.transform.position);
                     if (fTryDistance > fMaxDistance)
                     {
+                        //Debug.Log(String.Format("Better! New distance: {0}", fTryDistance));
                         fMaxDistance = fTryDistance;
                         m_vHopEndPos = vTryPos;
                     }
-                } while (nAttempts < m_nMaxMoveAttempts);
+                } while (nAttempts < m_nMaxMoveAttempts && fMaxDistance <= m_fScaredDistance);
 
-                transform.Rotate(Vector3.forward, fTryAngle);
+                Debug.Log(String.Format("Initiating hop after {0} attempts", nAttempts));
+                transform.up = m_vHopEndPos - m_vHopStartPos;
                 m_nState = eState.kHop;
                 break;
             case eState.kHop:
