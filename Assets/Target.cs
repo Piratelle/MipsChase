@@ -49,7 +49,7 @@ public class Target : MonoBehaviour
                 // "stay in one place until the player gets close"
                 if (Vector3.Distance(transform.position, m_player.transform.position) <= m_fScaredDistance)
                 {
-                    Debug.Log("Too close!");
+                    //Debug.Log("Too close!");
                     m_nState = eState.kHopStart;
                 }
                 break;
@@ -97,7 +97,7 @@ public class Target : MonoBehaviour
                     }
                 } while (nAttempts < m_nMaxMoveAttempts && fMaxDistance <= m_fScaredDistance);
 
-                Debug.Log(String.Format("Initiating hop after {0} attempts", nAttempts));
+                //Debug.Log(String.Format("Initiating hop after {0} attempts", nAttempts));
                 transform.up = m_vHopEndPos - m_vHopStartPos;
                 m_nState = eState.kHop;
                 break;

@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -99,14 +100,21 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
-        CheckForDive();
+        CheckForDive(); // check here so we can start the dive immediately, the method already restricts which states are allowed
         switch (m_nState)
         {
             case eState.kMoveSlow:
+                // "moving slowly until the speed reaches the fast threshold"
+                // make updates based on mouse position
                 UpdateDirectionAndSpeed();
+                m_fSpeed = Mathf.MoveTowards(m_fSpeed, m_fTargetSpeed, m_fIncSpeed);
+                transform.eulerAngles = new Vector3(0, 0, m_fTargetAngle);
+                transform.position = Vector3.MoveTowards(transform.position, transform.position - transform.right, m_fSpeed);
+
+                // check for state change based on speed
+                if (m_fSpeed > m_fSlowSpeed) m_nState = eState.kMoveFast;
                 break;
             case eState.kMoveFast:
-                UpdateDirectionAndSpeed();
                 break;
             case eState.kDiving:
                 // "similar to hop this should be a visible but quick movement...recovery afterwards"
