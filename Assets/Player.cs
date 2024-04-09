@@ -114,7 +114,11 @@ public class Player : MonoBehaviour
                 transform.position = Vector3.MoveTowards(transform.position, transform.position - transform.right, m_fSpeed);
 
                 // check for state change based on speed
-                if (m_fSpeed > m_fSlowSpeed) m_nState = eState.kMoveFast;
+                if (m_fSpeed > m_fSlowSpeed)
+                {
+                    Debug.Log("Switched to FAST.");
+                    m_nState = eState.kMoveFast;
+                }
                 break;
             case eState.kMoveFast:
                 // "moving quicky the player cannot turn immediately"
@@ -124,6 +128,7 @@ public class Player : MonoBehaviour
                 if ((Mathf.Abs(m_fTargetAngle - m_fAngle)) > m_fFastRotateMax)
                 {
                     // "continue in the original direction but begin slowing down"
+                    //Debug.Log("Angle change too large for fast mode! Slowing down.");
                     m_fTargetSpeed = m_fSlowSpeed;
                 } else
                 {
@@ -134,7 +139,11 @@ public class Player : MonoBehaviour
                 transform.position = Vector3.MoveTowards(transform.position, transform.position - transform.right, m_fSpeed);
 
                 // check for state change based on speed
-                if (m_fSpeed <= m_fSlowSpeed) m_nState = eState.kMoveSlow;
+                if (m_fSpeed <= m_fSlowSpeed)
+                {
+                    Debug.Log("Switched to SLOW.");
+                    m_nState = eState.kMoveSlow;
+                }
                 break;
             case eState.kDiving:
                 // "similar to hop this should be a visible but quick movement...recovery afterwards"
