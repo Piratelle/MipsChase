@@ -108,7 +108,7 @@ public class Player : MonoBehaviour
                 // make updates based on mouse position
                 UpdateDirectionAndSpeed();
                 m_fSpeed = Mathf.MoveTowards(m_fSpeed, m_fTargetSpeed, m_fIncSpeed);
-                transform.eulerAngles = new Vector3(0, 0, m_fTargetAngle);
+                transform.rotation = Quaternion.AngleAxis(m_fTargetAngle, Vector3.forward);
                 transform.position = Vector3.MoveTowards(transform.position, transform.position - transform.right, m_fSpeed);
 
                 // check for state change based on speed
