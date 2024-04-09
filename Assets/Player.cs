@@ -105,16 +105,36 @@ public class Player : MonoBehaviour
         {
             case eState.kMoveSlow:
                 // "moving slowly until the speed reaches the fast threshold"
-                // make updates based on mouse position
                 UpdateDirectionAndSpeed();
+
+                // make updates based on mouse position
                 m_fSpeed = Mathf.MoveTowards(m_fSpeed, m_fTargetSpeed, m_fIncSpeed);
-                transform.rotation = Quaternion.AngleAxis(m_fTargetAngle, Vector3.forward);
+                m_fAngle = m_fTargetAngle;
+                transform.rotation = Quaternion.AngleAxis(m_fAngle, Vector3.forward);
                 transform.position = Vector3.MoveTowards(transform.position, transform.position - transform.right, m_fSpeed);
 
                 // check for state change based on speed
                 if (m_fSpeed > m_fSlowSpeed) m_nState = eState.kMoveFast;
                 break;
             case eState.kMoveFast:
+                // "moving quicky the player cannot turn immediately"
+                UpdateDirectionAndSpeed();
+
+                // check change in angle before allowing motion
+                if ((Mathf.Abs(m_fTargetAngle - m_fAngle)) > m_fFastRotateMax)
+                {
+                    // "continue in the original direction but begin slowing down"
+                    m_fTargetSpeed = m_fSlowSpeed;
+                } else
+                {
+                    m_fAngle = m_fTargetAngle;
+                }
+                m_fSpeed = Mathf.MoveTowards(m_fSpeed, m_fTargetSpeed, m_fIncSpeed);
+                transform.rotation = Quaternion.AngleAxis(m_fAngle, Vector3.forward);
+                transform.position = Vector3.MoveTowards(transform.position, transform.position - transform.right, m_fSpeed);
+
+                // check for state change based on speed
+                if (m_fSpeed <= m_fSlowSpeed) m_nState = eState.kMoveSlow;
                 break;
             case eState.kDiving:
                 // "similar to hop this should be a visible but quick movement...recovery afterwards"
